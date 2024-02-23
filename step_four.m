@@ -9,6 +9,9 @@ function Gn = step_four(Gm, elementList)
     % TFs is the list of all of their respective transfer functions
     Gn = {};
     TFs = {};
+    numPaths = [];
+    numNodes = [];
+    numParrallel = [];
     
     % P represents a list of all possible ways of assigning element types
     % to the edges of the graph
@@ -48,6 +51,7 @@ function Gn = step_four(Gm, elementList)
 
             % Comparison A with unique(A, 'rows') tells whether any edge
             % weights of the same type are repeated
+
             if not(isequal(A, unique(A,'rows')))
                 RE = 1;
                 continue
@@ -114,9 +118,25 @@ function Gn = step_four(Gm, elementList)
                C = symvar(TF);
                C = C(C~=s);
 
+                
+               thisGraphNumPaths = length(edgePaths);
+               thisGraphNumNodes = height(g.Nodes);
+               thisGraphNumParrallel = height(A(:,[1 2]))-height(unique(A(:,[1 2]), 'rows'));
+               %disp(thisGraphNumPaths == thisGraphNumNodes);
+               
 
-               for tfi=1:length(TFs) 
-                    if compareTF(TF, TFs{tfi}, C, bList, cList, kList)
+               %% Indexes valid graphs to compare
+               validNumPaths = numPaths == thisGraphNumPaths;
+               validNumNodes = numNodes == thisGraphNumNodes;
+               validNumParrallel = numParrallel == thisGraphNumParrallel;
+               validGraphs = validNumNodes & validNumPaths & validNumParrallel;
+               %disp(sum(validGraphs)/length(TFs))
+               
+               TFsValid = TFs(validGraphs);
+               
+
+               for tfi=1:length(TFsValid) 
+                    if compareTF(TF, TFsValid{tfi}, C, bList, cList, kList)
                         RE = 1;
                         break
                     end
@@ -128,13 +148,16 @@ function Gn = step_four(Gm, elementList)
                     
                     Gn{end+1} = g;
                     TFs{end+1} = TF;
-                    disp(length(TFs))
+                    numPaths = [numPaths, thisGraphNumPaths];
+                    numNodes = [numNodes, thisGraphNumNodes];
+                    numParrallel = [numParrallel, thisGraphNumParrallel];
+                    %disp(numParrallel);
+                    
                 end
-                
             end
             
         end
         
     end
-    
+
 end
