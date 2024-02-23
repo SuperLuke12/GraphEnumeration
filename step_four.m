@@ -1,7 +1,9 @@
-function Gn = step_four(Gm, W)
-    
+function Gn = step_four(Gm, elementList)
+    % Defining symbol s to represent laplace complex parameter
+    syms s
+
     % N is number of elements / edges
-    N = length(W);
+    N = sum(elementList);
     
     % Gn is the list of all accepted network configurations
     % TFs is the list of all of their respective transfer functions
@@ -10,6 +12,10 @@ function Gn = step_four(Gm, W)
     
     % P represents a list of all possible ways of assigning element types
     % to the edges of the graph
+
+
+    W = [ones(1, elementList(1)), 2*ones(1, elementList(2)), 3*ones(1, elementList(3))];
+
     P = perms(W);
 
     % Iterates through each network topology
@@ -99,31 +105,30 @@ function Gn = step_four(Gm, W)
             
             if RE == 0
                 
-                TF = findTF(g);
-                
-                
+               TF = findTF(g);
+               parameterNums = randperm(100,sum(elementList));
+               bList = perms(parameterNums(1:elementList(1)));
+               cList = perms(parameterNums(elementList(1)+(1:elementList(2))));
+               kList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
+  
+               C = symvar(TF);
+               C = C(C~=s);
 
-                for tfi=1:length(TFs)
 
-
-                    
-                        
-                    if compareTF(TF, TFs{tfi})
+               for tfi=1:length(TFs) 
+                    if compareTF(TF, TFs{tfi}, C, bList, cList, kList)
                         RE = 1;
                         break
                     end
-                    
-                
-                end
-                
- 
-                
+               end
+
+
+
                 if RE == 0
-                
+                    
                     Gn{end+1} = g;
                     TFs{end+1} = TF;
-                    
-            
+                    disp(length(TFs))
                 end
                 
             end

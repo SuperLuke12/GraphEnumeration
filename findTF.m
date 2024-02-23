@@ -67,7 +67,7 @@ function H = findTF(g)
     
     B = inv(A);
     %disp(B)
-    H = B(target, target);
+    H = expand(B(target, target));
     %disp(H)
 
 end
