@@ -1,6 +1,39 @@
 function Gn = step_four(Gm, elementList)
     % Defining symbol s to represent laplace complex parameter
     syms s
+    
+    % bList = sym(zeros(1,elementList(1)));
+    % cList = sym(zeros(1,elementList(2)));
+    % kList = sym(zeros(1,elementList(3)));
+    % 
+    % for bIndex=1:elementList(1)
+    %     bList(bIndex) = sym((strcat('b',string(bIndex))));
+    % end
+    % 
+    % for cIndex=1:elementList(2)
+    %     cList(cIndex) = sym((strcat('c',string(cIndex))));
+    % end
+    % 
+    % for kIndex=1:elementList(3)
+    %     kList(kIndex) = sym((strcat('k',string(kIndex))));
+    % end
+    % 
+    % bList = perms(bList);
+    % 
+    % cList = perms(cList);
+    % 
+    % kList = perms(kList);
+
+
+                   
+    parameterNums = randperm(100,sum(elementList));
+               
+    bList = perms(parameterNums(1:elementList(1)));
+               
+    cList = perms(parameterNums(elementList(1)+(1:elementList(2))));
+               
+    kList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
+
 
     % N is number of elements / edges
     N = sum(elementList);
@@ -8,14 +41,14 @@ function Gn = step_four(Gm, elementList)
     % Gn is the list of all accepted network configurations
     % TFs is the list of all of their respective transfer functions
     Gn = {};
-    TFs = {};
+    TFs = zeros(0,8);
+        
     numPaths = [];
     numNodes = [];
     numParrallel = [];
-    
+
     % P represents a list of all possible ways of assigning element types
     % to the edges of the graph
-
 
     W = [ones(1, elementList(1)), 2*ones(1, elementList(2)), 3*ones(1, elementList(3))];
 
@@ -108,13 +141,9 @@ function Gn = step_four(Gm, elementList)
             end
             
             if RE == 0
-                
+               
                TF = findTF(g);
-               parameterNums = randperm(100,sum(elementList));
-               bList = perms(parameterNums(1:elementList(1)));
-               cList = perms(parameterNums(elementList(1)+(1:elementList(2))));
-               kList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
-  
+
                C = symvar(TF);
                C = C(C~=s);
 
@@ -123,41 +152,34 @@ function Gn = step_four(Gm, elementList)
                thisGraphNumNodes = height(g.Nodes);
                thisGraphNumParrallel = height(A(:,[1 2]))-height(unique(A(:,[1 2]), 'rows'));
                %disp(thisGraphNumPaths == thisGraphNumNodes);
-               
+
 
                %% Indexes valid graphs to compare
                validNumPaths = numPaths == thisGraphNumPaths;
                validNumNodes = numNodes == thisGraphNumNodes;
                validNumParrallel = numParrallel == thisGraphNumParrallel;
                validGraphs = validNumNodes & validNumPaths & validNumParrallel;
-               %disp(sum(validGraphs)/length(TFs))
-               
-               TFsValid = TFs(validGraphs);
-               
-
-               for tfi=1:length(TFsValid) 
-                    if compareTF(TF, TFsValid{tfi}, C, bList, cList, kList)
-                        RE = 1;
-                        break
-                    end
-               end
-
-
-
-                if RE == 0
+               %disp(validGraphs)
+               TFsValid = TFs(validGraphs,:);
+                
+               %disp(TFsValid)
+               [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, bList, cList, kList);
+                    
+                
+               if RE == 0 & output ==0
                     
                     Gn{end+1} = g;
-                    TFs{end+1} = TF;
-                    numPaths = [numPaths, thisGraphNumPaths];
-                    numNodes = [numNodes, thisGraphNumNodes];
-                    numParrallel = [numParrallel, thisGraphNumParrallel];
-                    %disp(numParrallel);
-                    
-                end
-            end
-            
-        end
-        
-    end
 
+                    TFs(end+1,:) = TFCoeffs;
+                    %disp(TFs)
+                    
+                    numPaths = [numPaths; thisGraphNumPaths];
+                    numNodes = [numNodes; thisGraphNumNodes];
+                    numParrallel = [numParrallel; thisGraphNumParrallel];
+
+               end
+            end 
+        end
+    end
+    disp(TFs)
 end

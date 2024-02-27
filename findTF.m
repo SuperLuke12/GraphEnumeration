@@ -19,7 +19,7 @@ function H = findTF(g)
 
         
         if g.Edges.Type(edgeIndex) == 1
-            %b = sym(strcat('b',string(bIndex)));
+            
             elementName = sym(strcat('b',string(bIndex)));
             bIndex = bIndex + 1;
 
