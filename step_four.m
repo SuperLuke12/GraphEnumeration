@@ -41,7 +41,7 @@ function Gn = step_four(Gm, elementList)
     % Gn is the list of all accepted network configurations
     % TFs is the list of all of their respective transfer functions
     Gn = {};
-    TFs = zeros(0,8);
+    TFs = zeros(0,20);
         
     numPaths = [];
     numNodes = [];
@@ -147,19 +147,21 @@ function Gn = step_four(Gm, elementList)
                C = symvar(TF);
                C = C(C~=s);
 
-                
+               
+               % Storing details about current graph
                thisGraphNumPaths = length(edgePaths);
                thisGraphNumNodes = height(g.Nodes);
                thisGraphNumParrallel = height(A(:,[1 2]))-height(unique(A(:,[1 2]), 'rows'));
-               %disp(thisGraphNumPaths == thisGraphNumNodes);
-
-
+              
                %% Indexes valid graphs to compare
                validNumPaths = numPaths == thisGraphNumPaths;
                validNumNodes = numNodes == thisGraphNumNodes;
                validNumParrallel = numParrallel == thisGraphNumParrallel;
+                
+              
+                
                validGraphs = validNumNodes & validNumPaths & validNumParrallel;
-               %disp(validGraphs)
+
                TFsValid = TFs(validGraphs,:);
                 
                %disp(TFsValid)
@@ -171,8 +173,6 @@ function Gn = step_four(Gm, elementList)
                     Gn{end+1} = g;
 
                     TFs(end+1,:) = TFCoeffs;
-                    %disp(TFs)
-                    
                     numPaths = [numPaths; thisGraphNumPaths];
                     numNodes = [numNodes; thisGraphNumNodes];
                     numParrallel = [numParrallel; thisGraphNumParrallel];
@@ -181,5 +181,5 @@ function Gn = step_four(Gm, elementList)
             end 
         end
     end
-    disp(TFs)
+
 end
