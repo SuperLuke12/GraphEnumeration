@@ -58,16 +58,12 @@ function H = findTF(g)
     source = str2double(tNodes.Name(2));
     target = str2double(tNodes.Name(1));
     
-    %disp(strcat(string(source), ' ', string(target)))
-    %disp(A)
+
     A(:,source) = [];
     A(source,:) = [];
-    %disp(A)
-    
+
     
     B = inv(A);
-    %disp(B)
-    H = expand(B(target, target));
-    %disp(H)
 
+    H = expand(B(target, target));
 end
