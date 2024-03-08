@@ -127,13 +127,7 @@ function Gn = step_four(Gm, elementList)
                thisGraphNumPaths = length(edgePaths);
                thisGraphNumNodes = height(g.Nodes);
                thisGraphNumParrallel = height(A(:,[1 2]))-height(unique(A(:,[1 2]), 'rows'));
-<<<<<<< HEAD
 
-
-
-=======
-              
->>>>>>> 8313c783c3d8e75be5aa7b45ebc16a187aa217ba
                %% Indexes valid graphs to compare
                validNumPaths = numPaths == thisGraphNumPaths;
                validNumNodes = numNodes == thisGraphNumNodes;
@@ -154,11 +148,7 @@ function Gn = step_four(Gm, elementList)
                     Gn{end+1} = g;
 
                     TFs(end+1,:) = TFCoeffs;
-<<<<<<< HEAD
 
-                    
-=======
->>>>>>> 8313c783c3d8e75be5aa7b45ebc16a187aa217ba
                     numPaths = [numPaths; thisGraphNumPaths];
                     numNodes = [numNodes; thisGraphNumNodes];
                     numParrallel = [numParrallel; thisGraphNumParrallel];
@@ -167,8 +157,5 @@ function Gn = step_four(Gm, elementList)
             end 
         end
     end
-<<<<<<< HEAD
-=======
 
->>>>>>> 8313c783c3d8e75be5aa7b45ebc16a187aa217ba
 end
