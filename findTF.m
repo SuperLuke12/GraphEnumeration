@@ -65,5 +65,5 @@ function H = findTF(g)
     
     B = inv(A);
 
-    H = expand(B(target, target));
+    H = 1/expand(B(target, target));
 end

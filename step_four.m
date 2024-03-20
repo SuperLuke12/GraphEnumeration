@@ -1,8 +1,8 @@
-function Gn = step_four(Gm, elementList)
+function [Gn, tf_list] = step_four(Gm, elementList)
     % Defining symbol s to represent laplace complex parameter
     syms s
     
-                   
+   
     parameterNums = randperm(100,sum(elementList));
                
     bList = perms(parameterNums(1:elementList(1)));          
@@ -17,6 +17,7 @@ function Gn = step_four(Gm, elementList)
     % TFs is the list of all of their respective transfer functions
     Gn = {};
     TFs = zeros(0,20);
+    tf_list = sym([]);
         
     numPaths = [];
     numNodes = [];
@@ -118,6 +119,7 @@ function Gn = step_four(Gm, elementList)
             if RE == 0
                
                TF = findTF(g);
+               
 
                C = symvar(TF);
                C = C(C~=s);
@@ -148,6 +150,7 @@ function Gn = step_four(Gm, elementList)
                     Gn{end+1} = g;
 
                     TFs(end+1,:) = TFCoeffs;
+                    tf_list(end+1) = TF;
 
                     numPaths = [numPaths; thisGraphNumPaths];
                     numNodes = [numNodes; thisGraphNumNodes];

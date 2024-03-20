@@ -18,8 +18,12 @@ function Gout = main(elementList)
     disp(strcat('Step 3 done in ~', string(toc), 's'))
     
     tic
-    D = step_four(C, elementList);
+    [D, tf_list] = step_four(C, elementList);
     disp(strcat('Step 4 done in ~', string(toc), 's'))
+    findTF(D{1})
+    tic
+    step_five(tf_list, elementList);
+    disp(strcat('Step 5 done in ~', string(toc), 's'))
     
     Gout = D;
 
@@ -28,4 +32,6 @@ function Gout = main(elementList)
         filename = strcat('mainStep4_', string(i),'.png');
         saveas(h, filename);
     end
+
+    
 end
