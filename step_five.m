@@ -4,9 +4,9 @@ function step_five(tf_list, elementList)
     options = optimoptions('fmincon','Display','off');
     
     
-    lb = [10000 * ones(1,elementList(1)), 0 * ones(1,elementList(2)), 0 * ones(1,elementList(1))];
-    ub = [120000 * ones(1,elementList(1)), 8000 * ones(1,elementList(2)), 500 * ones(1,elementList(1))];
-    x0 = [60000 * ones(1,elementList(1)), 2000 * ones(1,elementList(2)), 100 * ones(1,elementList(1))];
+    lb = [10000 * ones(1,elementList(1)), 0 * ones(1,elementList(2)), 0 * ones(1,elementList(3))];
+    ub = [120000 * ones(1,elementList(1)), 8000 * ones(1,elementList(2)), 500 * ones(1,elementList(3))];
+    x0 = [60000 * ones(1,elementList(1)), 2000 * ones(1,elementList(2)), 100 * ones(1,elementList(3))];
 
     for graphIndex = 1:length(tf_list)
         

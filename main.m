@@ -1,5 +1,6 @@
 function Gout = main(elementList)
 
+    % Order of elements is K C B
     N = sum(elementList);
     
     tic
@@ -20,7 +21,7 @@ function Gout = main(elementList)
     tic
     [D, tf_list] = step_four(C, elementList);
     disp(strcat('Step 4 done in ~', string(toc), 's'))
-    findTF(D{1})
+    
     tic
     step_five(tf_list, elementList);
     disp(strcat('Step 5 done in ~', string(toc), 's'))

@@ -142,7 +142,7 @@ function [Gn, tf_list] = step_four(Gm, elementList)
                TFsValid = TFs(validGraphs,:);
                 
 
-               [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, bList, cList, kList);
+               [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, kList, cList, bList);
                     
                 
                if RE == 0 & output ==0

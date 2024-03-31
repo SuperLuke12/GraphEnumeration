@@ -14,7 +14,6 @@ function J3 = calcJ3(Y, params)
 
 
     Y = Y + ks/s; % adds static stiffness spring in parrallel with the rest of the system
-    %disp(Y)
     H = subs((1/s) * (kt - kt*(kt/((mu*ms*s^4+mu*Y*s^3 + ms * Y * s^3)/(ms*s^2 + s*Y) + kt))), symbols, params);
 
     [n, d] = numden(H);
