@@ -1,4 +1,4 @@
-function [RE, TFCoeffs] = compareTFMatrix(TFMatrix, TF, C, bList, cList, kList)
+function [RE, TFCoeffs] = compareTFMatrix(TFMatrix, TF, C, bList, cList, kList, nNum, dNum)
 
     RE = 0;
 
@@ -8,8 +8,8 @@ function [RE, TFCoeffs] = compareTFMatrix(TFMatrix, TF, C, bList, cList, kList)
             for y=1:height(kList)
                 
 
-                cn = zeros(1,10);
-                cd = zeros(1,10);
+                cn = zeros(1,nNum);
+                cd = zeros(1,dNum);
 
                 [n, d] = numden(subs(TF, C, [bList(i,:), cList(x,:), kList(y,:)]));
 

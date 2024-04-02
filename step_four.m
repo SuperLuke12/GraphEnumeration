@@ -1,14 +1,17 @@
 function [Gn, tf_list] = step_four(Gm, elementList)
     % Defining symbol s to represent laplace complex parameter
     syms s
-    
+        
+    kList = sym([strcat('k',string(1:elementList(1)))]);
+    cList = sym([strcat('c',string(1:elementList(2)))]);
+    bList = sym([strcat('b',string(1:elementList(3)))]);
+    C = [kList, cList, bList];
    
     parameterNums = randperm(100,sum(elementList));
                
-    bList = perms(parameterNums(1:elementList(1)));          
+    kList = perms(parameterNums(1:elementList(1)));          
     cList = perms(parameterNums(elementList(1)+(1:elementList(2))));         
-    kList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
-
+    bList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
 
     % N is number of elements / edges
     N = sum(elementList);
@@ -16,9 +19,12 @@ function [Gn, tf_list] = step_four(Gm, elementList)
     % Gn is the list of all accepted network configurations
     % TFs is the list of all of their respective transfer functions
     Gn = {};
-    TFs = zeros(0,20);
+
     tf_list = sym([]);
-        
+
+    nCoeffMatrix = zeros(0,1);
+    dCoeffMatrix = zeros(0,1);
+
     numPaths = [];
     numNodes = [];
     numParrallel = [];
@@ -119,12 +125,7 @@ function [Gn, tf_list] = step_four(Gm, elementList)
             if RE == 0
                
                TF = findTF(g);
-               
 
-               C = symvar(TF);
-               C = C(C~=s);
-
-               
                % Storing details about current graph
                thisGraphNumPaths = length(edgePaths);
                thisGraphNumNodes = height(g.Nodes);
@@ -134,22 +135,61 @@ function [Gn, tf_list] = step_four(Gm, elementList)
                validNumPaths = numPaths == thisGraphNumPaths;
                validNumNodes = numNodes == thisGraphNumNodes;
                validNumParrallel = numParrallel == thisGraphNumParrallel;
-                
-              
-                
+
+
                validGraphs = validNumNodes & validNumPaths & validNumParrallel;
 
-               TFsValid = TFs(validGraphs,:);
-                
 
-               [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, kList, cList, bList);
+               
+               % INSERTING compareTFMatrix Code into main code START 
+                
+               for kIndex=1:height(kList)  
+                   for cIndex=1:height(cList)
+                       for bIndex=1:height(bList)
+                            
+
+                           [n, d] = numden(subs(TF, C, [kList(kIndex,:), cList(cIndex,:), bList(bIndex,:)]));
+                           nCoeffs = coeffs(n);
+                           dCoeffs = coeffs(d);
+                            
+
+                           if length(nCoeffs) > width(nCoeffMatrix) || length(dCoeffs) > width(dCoeffMatrix)
+                               break
+                           else
+                                nCoeffs = [nCoeffs zeros(1, width(nCoeffMatrix)-length(nCoeffs))];
+                                dCoeffs = [dCoeffs zeros(1, width(dCoeffMatrix)-length(dCoeffs))];
+                           end
+                           
+
+                           if any(ismember(nCoeffMatrix(validGraphs,:), nCoeffs, 'rows') == 1 & ismember(dCoeffMatrix(validGraphs,:), dCoeffs, 'rows') == 1)
+                                RE = 1;
+                           end
+                       end
+                   end
+               end
+
+               % INSERTING compareTFMatrix Code into main code END 
+
+               % [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, kList, cList, bList);
                     
                 
-               if RE == 0 & output ==0
+               if RE == 0 
                     
                     Gn{end+1} = g;
+                                               
+                    if length(nCoeffs) > width(nCoeffMatrix)
 
-                    TFs(end+1,:) = TFCoeffs;
+                        nCoeffMatrix = [nCoeffMatrix zeros(height(nCoeffMatrix), length(nCoeffs)-width(nCoeffMatrix)) ];   
+                    end
+
+                    if length(dCoeffs) > width(dCoeffMatrix)           
+                        dCoeffMatrix = [dCoeffMatrix zeros(height(dCoeffMatrix), length(dCoeffs)-width(dCoeffMatrix))];   
+                    end
+
+
+                    nCoeffMatrix(end+1,1:length(nCoeffs)) = nCoeffs;
+                    dCoeffMatrix(end+1,1:length(dCoeffs)) = dCoeffs;
+
                     tf_list(end+1) = TF;
 
                     numPaths = [numPaths; thisGraphNumPaths];
@@ -160,5 +200,4 @@ function [Gn, tf_list] = step_four(Gm, elementList)
             end 
         end
     end
-
 end
