@@ -2,8 +2,6 @@ function Gout = main(elementList)
 
     % Order of elements is K C B
     N = sum(elementList);
-    
-
     t1 = 0.0;
     t2 = 0.0;
 
@@ -19,6 +17,7 @@ function Gout = main(elementList)
         B = [B, step_two(temp)];
         t2 = t2 + toc;
     end
+    
     disp(strcat('Step 1 done in ~', string(t1), 's'))
 
     disp(strcat('Step 2 done in ~', string(t2), 's'))
@@ -26,17 +25,22 @@ function Gout = main(elementList)
     tic
     C = step_three(B, N);
     disp(strcat('Step 3 done in ~', string(toc), 's'))
-    
+   
+
     tic
-    [D, tf_list] = step_four(C, elementList);
+    Gout = {};
+    parfor group=1:length(C)
+        [D, tf_list] = step_four(C{group}, elementList);
+        Gout = [Gout, D];
+    end
+    
     disp(strcat('Step 4 done in ~', string(toc), 's'))
     
-    disp(append('Generated ', string(length(D)), ' networks'))
+    disp(append('Generated ', string(length(Gout)), ' networks'))
+    
     % tic
     % step_five(tf_list, elementList);
     % disp(strcat('Step 5 done in ~', string(toc), 's'))
-    % 
-    Gout = D;
 
     % for i=1:length(Gout)
     %     h = plot(Gout{i}, 'NodeLabel', Gout{i}.Nodes.Color, 'EdgeLabel',Gout{i}.Edges.Type);

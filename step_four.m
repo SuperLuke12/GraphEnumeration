@@ -8,10 +8,22 @@ function [Gn, tf_list] = step_four(Gm, elementList)
     C = [kList, cList, bList];
    
     parameterNums = randperm(100,sum(elementList));
+
+    paramPerms = [];
                
     kList = perms(parameterNums(1:elementList(1)));          
     cList = perms(parameterNums(elementList(1)+(1:elementList(2))));         
     bList = perms(parameterNums(elementList(1)+elementList(2)+(1:elementList(3))));
+    
+    for kIndex=1:height(kList)             
+        for cIndex=1:height(cList)         
+            for bIndex=1:height(bList)
+                 paramPerms(end+1, :) = [kList(kIndex,:), cList(cIndex,:), bList(bIndex,:)] ;     
+            end         
+        end
+    end
+
+
 
     % N is number of elements / edges
     N = sum(elementList);
@@ -136,43 +148,26 @@ function [Gn, tf_list] = step_four(Gm, elementList)
                validNumNodes = numNodes == thisGraphNumNodes;
                validNumParrallel = numParrallel == thisGraphNumParrallel;
 
-
                validGraphs = validNumNodes & validNumPaths & validNumParrallel;
 
-
-               
-               % INSERTING compareTFMatrix Code into main code START 
-                
-               for kIndex=1:height(kList)  
-                   for cIndex=1:height(cList)
-                       for bIndex=1:height(bList)
-                            
-
-                           [n, d] = numden(subs(TF, C, [kList(kIndex,:), cList(cIndex,:), bList(bIndex,:)]));
-                           nCoeffs = coeffs(n);
-                           dCoeffs = coeffs(d);
-                            
-
-                           if length(nCoeffs) > width(nCoeffMatrix) || length(dCoeffs) > width(dCoeffMatrix)
-                               break
-                           else
-                                nCoeffs = [nCoeffs zeros(1, width(nCoeffMatrix)-length(nCoeffs))];
-                                dCoeffs = [dCoeffs zeros(1, width(dCoeffMatrix)-length(dCoeffs))];
-                           end
+               for paramIndex=1:height(paramPerms)
+                   [n, d] = numden(subs(TF, C, paramPerms(paramIndex,:)));
                            
+                   nCoeffs = coeffs(n);       
+                   dCoeffs = coeffs(d);
+ 
+                   if length(nCoeffs) > width(nCoeffMatrix) || length(dCoeffs) > width(dCoeffMatrix)
 
-                           if any(ismember(nCoeffMatrix(validGraphs,:), nCoeffs, 'rows') == 1 & ismember(dCoeffMatrix(validGraphs,:), dCoeffs, 'rows') == 1)
-                                RE = 1;
-                           end
-                       end
+                       break
+                   else     
+                       nCoeffs = [nCoeffs zeros(1, width(nCoeffMatrix)-length(nCoeffs))];     
+                       dCoeffs = [dCoeffs zeros(1, width(dCoeffMatrix)-length(dCoeffs))];
+                   end         
+                   if any(ismember(nCoeffMatrix(validGraphs,:), nCoeffs, 'rows') == 1 & ismember(dCoeffMatrix(validGraphs,:), dCoeffs, 'rows') == 1)    
+                       RE = 1; 
                    end
                end
 
-               % INSERTING compareTFMatrix Code into main code END 
-
-               % [output, TFCoeffs] = compareTFMatrix(TFsValid, TF, C, kList, cList, bList);
-                    
-                
                if RE == 0 
                     
                     Gn{end+1} = g;
