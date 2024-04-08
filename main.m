@@ -29,18 +29,20 @@ function Gout = main(elementList)
 
     tic
     Gout = {};
+    tf_list = {};
     parfor group=1:length(C)
-        [D, tf_list] = step_four(C{group}, elementList);
+        [D, tfs] = step_four(C{group}, elementList);
         Gout = [Gout, D];
+        tf_list = [tf_list, tfs];
     end
     
     disp(strcat('Step 4 done in ~', string(toc), 's'))
     
     disp(append('Generated ', string(length(Gout)), ' networks'))
     
-    % tic
-    % step_five(tf_list, elementList);
-    % disp(strcat('Step 5 done in ~', string(toc), 's'))
+    tic
+    step_five(tf_list, elementList);
+    disp(strcat('Step 5 done in ~', string(toc), 's'))
 
     % for i=1:length(Gout)
     %     h = plot(Gout{i}, 'NodeLabel', Gout{i}.Nodes.Color, 'EdgeLabel',Gout{i}.Edges.Type);
