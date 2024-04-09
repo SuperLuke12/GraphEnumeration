@@ -73,7 +73,6 @@ Gm{end + 1} = currentGroup;
 splitGroups = {};
 for i=1:length(Gm)
     currentGroup = Gm{i};
-    disp(currentGroup)
     numPaths = [];
     for j=1:length(currentGroup)
 
@@ -82,12 +81,10 @@ for i=1:length(Gm)
         thisGraphNumPaths = length(edgePaths);
         numPaths = [numPaths, thisGraphNumPaths];
     end
-    disp(numPaths)
     for j=min(numPaths):max(numPaths)
         newGroup = {currentGroup{numPaths==j}};
-        disp(newGroup)
         splitGroups(end+1) = {newGroup};
-        disp(splitGroups)
+
     end
 end
 Gm = splitGroups;

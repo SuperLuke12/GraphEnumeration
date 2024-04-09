@@ -26,16 +26,14 @@ tic
 C = step_three(B, N);
 disp(strcat('Step 3 done in ~', string(toc), 's'))
 
-disp(C)
-for i=1:length(C)
-    graphGroup = C{i};
-    for j=1:length(graphGroup)
-        h = plot(graphGroup{j}, 'NodeLabel', graphGroup{j}.Nodes.Color);
-        filename = strcat('mainStep3_Group', string(i),'graph', string(j),'.png');
-        saveas(h, filename);
-    end
-end
-
+% for i=1:length(C)
+%     graphGroup = C{i};
+%     for j=1:length(graphGroup)
+%         h = plot(graphGroup{j}, 'NodeLabel', graphGroup{j}.Nodes.Color);
+%         filename = strcat('mainStep3_Group', string(i),'graph', string(j),'.png');
+%         saveas(h, filename);
+%     end
+% end
 
 tic
 Gout = {};
