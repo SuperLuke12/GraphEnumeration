@@ -21,7 +21,7 @@ parfor graphIndex = 1:length(tf_list)
 
     problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'options',options);
     ms = MultiStart;
-    [x,f] = run(ms,problem,1);
+    [x,f] = run(ms,problem,3);
     results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
 
 end

@@ -3,7 +3,6 @@ Gm = {};
 currentGroup = {};
 prevNodeNum = height(Gs{1}.Nodes);
 
-numNodes = [];
 
 for i=1:length(Gs)
     g = Gs{i};
@@ -55,24 +54,41 @@ for i=1:length(Gs)
         if RE == 0
             
             thisGraphNumNodes = height(g.Nodes);
-
-
+            
             if prevNodeNum == thisGraphNumNodes
+
                 currentGroup{end + 1} = g1;
             else
-
-                Gm{end + 1} = currentGroup;
+                if length(currentGroup) > 0
+                    Gm{end + 1} = currentGroup;
+                end
                 prevNodeNum = thisGraphNumNodes;
                 currentGroup = {g1};
             end
-
-
-            numNodes = [numNodes; thisGraphNumNodes];
         end
     end
 end
 Gm{end + 1} = currentGroup;
+
+splitGroups = {};
+for i=1:length(Gm)
+    currentGroup = Gm{i};
+    disp(currentGroup)
+    numPaths = [];
+    for j=1:length(currentGroup)
+
+        tNodes = currentGroup{j}.Nodes(currentGroup{j}.Nodes.Color==1,:);
+        [~, edgePaths] = allpaths(currentGroup{j}, tNodes{1,1},tNodes{2,1});
+        thisGraphNumPaths = length(edgePaths);
+        numPaths = [numPaths, thisGraphNumPaths];
+    end
+    disp(numPaths)
+    for j=min(numPaths):max(numPaths)
+        newGroup = {currentGroup{numPaths==j}};
+        disp(newGroup)
+        splitGroups(end+1) = {newGroup};
+        disp(splitGroups)
+    end
 end
-
-
-
+Gm = splitGroups;
+end
