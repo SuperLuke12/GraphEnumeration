@@ -1,4 +1,5 @@
-function Gout = main(elementList)
+function [Gout, runtime] = main(elementList)
+runtime = zeros(1,4);
 
 % Order of elements is K C B
 N = sum(elementList);
@@ -17,14 +18,17 @@ parfor i=1:N
     B = [B, step_two(temp)];
     t2 = t2 + toc;
 end
-
+runtime(1,1) = t1;
+runtime(1,2) = t2;
 disp(strcat('Step 1 done in ~', string(t1), 's'))
 
 disp(strcat('Step 2 done in ~', string(t2), 's'))
 
 tic
 C = step_three(B, N);
-disp(strcat('Step 3 done in ~', string(toc), 's'))
+t3 = toc;
+runtime(1,3) = t3;
+disp(strcat('Step 3 done in ~', string(t3), 's'))
 
 % for i=1:length(C)
 %     graphGroup = C{i};
@@ -57,8 +61,10 @@ parfor group=1:length(C)
     Gout = [Gout, D];
     tf_list = [tf_list, tfs];
 end
+t4 = toc;
+runtime(1,4) = t4;
 
-disp(strcat('Step 4 done in ~', string(toc), 's'))
+disp(strcat('Step 4 done in ~', string(t4), 's'))
 
 disp(append('Generated ', string(length(Gout)), ' networks'))
 
@@ -71,6 +77,5 @@ disp(append('Generated ', string(length(Gout)), ' networks'))
 %     filename = strcat('mainStep4_', string(i),'.png');
 %     saveas(h, filename);
 % end
-
 
 end
