@@ -1,4 +1,4 @@
-function [Gout, runtime] = main(elementList)
+function [Gout, runtime, performanceTable] = main(elementList)
 runtime = zeros(1,4);
 
 % Order of elements is K C B
@@ -43,16 +43,7 @@ tic
 Gout = {};
 tf_list = {};
 
-% if length(C) > getenv('NUMBER_OF_PROCESSORS')
-%
-%     [~,I] = sort(cellfun(@length,C));
-%     C = C(I);
-%     temp = C(1:getenv('NUMBER_OF_PROCESSORS'));
-%     temp2 = C(getenv('NUMBER_OF_PROCESSORS')+1:end);
-%     numExtraGroups = getenv('NUMBER_OF_PROCESSORS') - length(C);
-%
-%
-% end
+
 [~,I] = sort(cellfun(@length,C));
 C = C(I);
 
@@ -68,9 +59,15 @@ disp(strcat('Step 4 done in ~', string(t4), 's'))
 
 disp(append('Generated ', string(length(Gout)), ' networks'))
 
-% tic
-% step_five(tf_list, elementList);
-% disp(strcat('Step 5 done in ~', string(toc), 's'))
+tic
+performanceTable = step_five(tf_list, elementList);
+disp(strcat('Step 5 done in ~', string(toc), 's'))
+
+bestNetork = Gout{performanceTable{1,"NetworkID"}};
+h = plot(bestNetork, 'NodeLabel', bestNetork.Nodes.Color, 'EdgeLabel',bestNetork.Edges.Type);
+filename = strcat('optimalNetworkJ3_',string(elementList(1)), string(elementList(2)), string(elementList(3)), '.png');
+writetable(performanceTable(1,:),strcat('optimalNetworkJ3_',string(elementList(1)), string(elementList(2)), string(elementList(3)), '.txt'))
+saveas(h, filename);
 
 % for i=1:length(Gout)
 %     h = plot(Gout{i}, 'NodeLabel', Gout{i}.Nodes.Color, 'EdgeLabel',Gout{i}.Edges.Type);
