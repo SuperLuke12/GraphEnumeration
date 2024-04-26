@@ -50,7 +50,6 @@ function H = findTF(g)
         end
 
     end
-
     A = M.*s + C + K/s;    
 
     tNodes = g.Nodes(g.Nodes.Color==1,'Name'); 

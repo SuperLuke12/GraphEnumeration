@@ -60,16 +60,11 @@ disp(strcat('Step 4 done in ~', string(t4), 's'))
 disp(append('Generated ', string(length(Gout)), ' networks'))
 
 tic
-performanceTable = step_five(tf_list, elementList);
+performanceTable = step_five(Gout, tf_list, elementList);
 disp(strcat('Step 5 done in ~', string(toc), 's'))
 
 bestNetork = Gout{performanceTable{1,"NetworkID"}};
-
-
-
 filename = strcat('J3_elementNums-',string(sum(elementList)),'_performance-',string(performanceTable{1,"Performance"})  , '_elements-', string(elementList(1)), string(elementList(2)), string(elementList(3)));
-
-
 writetable(performanceTable(1,:),strcat(filename, '.txt'));
 h = plot(bestNetork, 'NodeLabel', bestNetork.Nodes.Color, 'EdgeLabel',strcat('Type:',string(bestNetork.Edges.Type), '-Name:',string(bestNetork.Edges.Name)));
 saveas(h, strcat(filename, '.png'));

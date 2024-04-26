@@ -1,4 +1,4 @@
-function results = step_five(tf_list, elementList)
+function results = step_five(Gout, tf_list, elementList)
 
 
 options = optimoptions('fmincon','Display','off');
@@ -14,25 +14,32 @@ varNames = ["NetworkID","Performance","OptimalValues"];
 
 results = table('Size',sz,'VariableTypes',varTypes,'VariableNames',varNames);
 
-parfor graphIndex = 1:length(tf_list)
+
+
+
+for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
+        
         disp(strcat('Assessing graph number ', string(graphIndex), '/', string(length(tf_list))))
-        try
-            fun = @(x) calcJ3(tf_list(graphIndex), x);
+
         
-            problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'options',options);
-            ms = MultiStart;
+        stiffness = findStiffness(Gout{graphIndex});
         
-            [x,f] = run(ms,problem, 3);
-            results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
-        catch
-            try
-                fun = @(x) calcJ3(tf_list(graphIndex), x);
-                [x,f] = fmincon(fun,x0,[],[],[],[], lb, ub,[],options)
-                results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
-            catch
-                disp('Unstable and rejected')
-            end
+        if stiffness ~= 0
+            stiffnessFcn = matlabFunction(stiffness);
+            
+
+            nonlincon = @(x) stiffnessFcn(mat2cell(x,1,ones(1,length(x))))- 120000;
         end
+
+
+        fun = @(x) calcJ3(tf_list(graphIndex), x);
+    
+        problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'nonlcon',@nonlcon,'options',options);
+        ms = MultiStart;
+    
+        [x,f] = run(ms,problem, 3);
+        results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
+
 end
 results = sortrows(results,"Performance");
 
@@ -40,3 +47,10 @@ results = sortrows(results,"Performance");
 
 end
 
+
+function [c,ceq] = nonlcon(x)
+
+ceq = nonlincon(mat2cell(x,1,ones(1,length(x))));
+    c = 0;
+    
+end
