@@ -2,7 +2,7 @@ function J3 = calcJ3(Y, params)
 
     
     kt = 150000;
-    ks = 10000; % Added static spring
+    ks = 120000; % Added static spring
     mu = 35; 
     ms = 250;
     V = 25;
