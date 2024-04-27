@@ -1,4 +1,6 @@
-function results = step_five(Gout, tf_list, elementList)
+function results = step_five(Gout, tf_list, elementList, ks)
+
+% ks is static stiffness of over all system constraint
 
 
 options = optimoptions('fmincon','Display','off');
@@ -33,7 +35,7 @@ for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
             stiffnessFcn = matlabFunction(stiffness);
             
             %Creates anonymous fcn
-            nonlcon = @(x) generalnonlcon(x, stiffnessFcn,springsUsed);
+            nonlcon = @(x) generalnonlcon(x, stiffnessFcn,springsUsed ,ks);
 
             fun = @(x) calcJ3(tf_list(graphIndex), x);
         
@@ -52,9 +54,8 @@ disp(results)
 end
 
 % General Non-linear constraint that is adapted to each stiffness fcn
-function [c,ceq] = generalnonlcon(x,stiffnessFcn, springsUsed)
+function [c,ceq] = generalnonlcon(x,stiffnessFcn, springsUsed, ks)
     % ks is the static stiffness of over all system
-    ks =120000;
     args = num2cell(x);
     ceq = stiffnessFcn(args{springsUsed}) - ks;
     c = [];

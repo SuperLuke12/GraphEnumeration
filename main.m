@@ -60,15 +60,22 @@ disp(strcat('Step 4 done in ~', string(t4), 's'))
 disp(append('Generated ', string(length(Gout)), ' networks'))
 
 tic
-performanceTable = step_five(Gout, tf_list, elementList);
+ks = 120000;
+performanceTable = step_five(Gout, tf_list, elementList, ks);
 disp(strcat('Step 5 done in ~', string(toc), 's'))
 
-bestNetork = Gout{performanceTable{1,"NetworkID"}};
-filename = strcat('J3_elementNums-',string(sum(elementList)),'_performance-',string(performanceTable{1,"Performance"})  , '_elements-', string(elementList(1)), string(elementList(2)), string(elementList(3)));
-writetable(performanceTable(1,:),strcat(filename, '.txt'));
-h = plot(bestNetork, 'NodeLabel', bestNetork.Nodes.Color, 'EdgeLabel',strcat('Type:',string(bestNetork.Edges.Type), '-Name:',string(bestNetork.Edges.Name)));
-saveas(h, strcat(filename, '.png'));
+bestResults = performanceTable(performanceTable.Performance <= 1.005 * performanceTable{1,"Performance"}, :);
+disp(bestResults)
+for row = 1:size(bestResults,1)
+    
+    filename = strcat('J3_ks=',string(ks), '_elemNums=',string(sum(elementList)),'_f(x)=',string(bestResults{row,"Performance"})  , '_elements=', string(elementList(1)), string(elementList(2)), string(elementList(3)), '_',string(row),'I',string(height(bestResults)));
 
+    writetable(bestResults(row,:),strcat(filename, '.txt'));
+
+    network = Gout{bestResults{row,"NetworkID"}};
+    h = plot(network, 'NodeLabel', network.Nodes.Color, 'EdgeLabel',strcat('Type:',string(network.Edges.Type), '-Name:',string(network.Edges.Name)));
+    saveas(h, strcat(filename, '.png'));
+end
 % for i=1:length(Gout)
 %     h = plot(Gout{i}, 'NodeLabel', Gout{i}.Nodes.Color, 'EdgeLabel',strcat(string(Gout{i}.Edges.Type), ':', string(Gout{i}.Edges.Name)));
 %     filename = strcat('mainStep4_', string(i),'.png');
