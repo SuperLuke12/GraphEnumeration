@@ -25,32 +25,38 @@ for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
         stiffness = findStiffness(Gout{graphIndex});
         
         if stiffness ~= 0
+            % Finds index of all springs used within passive stiffness eqn
+            springsUsed = string(symvar(stiffness));
+            springsUsed = str2double(erase(springsUsed,'k'));
+            
+            %Creates anonymous fcn from stiffness expression
             stiffnessFcn = matlabFunction(stiffness);
             
+            %Creates anonymous fcn
+            nonlcon = @(x) generalnonlcon(x, stiffnessFcn,springsUsed);
 
-            nonlincon = @(x) stiffnessFcn(mat2cell(x,1,ones(1,length(x))))- 120000;
+            fun = @(x) calcJ3(tf_list(graphIndex), x);
+        
+            problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'nonlcon',nonlcon,'options',options);
+            ms = MultiStart;
+        
+            [x,f] = run(ms,problem, 3);
+            results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
+        
+        else
+            results = [results; cell2table({graphIndex, 9999, zeros(1, sum(elementList))}, "VariableNames",varNames)];
         end
-
-
-        fun = @(x) calcJ3(tf_list(graphIndex), x);
-    
-        problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'nonlcon',@nonlcon,'options',options);
-        ms = MultiStart;
-    
-        [x,f] = run(ms,problem, 3);
-        results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
-
 end
 results = sortrows(results,"Performance");
-
-
-
+disp(results)
 end
 
-
-function [c,ceq] = nonlcon(x)
-
-ceq = nonlincon(mat2cell(x,1,ones(1,length(x))));
-    c = 0;
+% General Non-linear constraint that is adapted to each stiffness fcn
+function [c,ceq] = generalnonlcon(x,stiffnessFcn, springsUsed)
+    % ks is the static stiffness of over all system
+    ks =120000;
+    args = num2cell(x);
+    ceq = stiffnessFcn(args{springsUsed}) - ks;
+    c = [];
     
 end
