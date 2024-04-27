@@ -25,7 +25,7 @@ for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
 
         
         stiffness = findStiffness(Gout{graphIndex});
-        
+        disp(stiffness)
         if stiffness ~= 0
             % Finds index of all springs used within passive stiffness eqn
             springsUsed = string(symvar(stiffness));
@@ -39,14 +39,19 @@ for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
 
             fun = @(x) calcJ3(tf_list(graphIndex), x);
         
-            problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'nonlcon',nonlcon,'options',options);
-            ms = MultiStart;
-        
-            [x,f] = run(ms,problem, 3);
-            results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
+            try
+                problem = createOptimProblem('fmincon', 'objective', fun,'x0',x0,'lb', lb,'ub', ub,'nonlcon',nonlcon,'options',options);
+                
+                ms = MultiStart;
+                
+                [x,f] = run(ms,problem, 3);
+                results = [results; cell2table({graphIndex, f,x}, "VariableNames",varNames)];
+            catch
+                disp('H2 norm unstable')
+            end
         
         else
-            results = [results; cell2table({graphIndex, 9999, zeros(1, sum(elementList))}, "VariableNames",varNames)];
+            results = [results; cell2table({graphIndex, 999999999, zeros(1, sum(elementList))}, "VariableNames",varNames)];
         end
 end
 results = sortrows(results,"Performance");
