@@ -19,7 +19,7 @@ results = table('Size',sz,'VariableTypes',varTypes,'VariableNames',varNames);
 
 
 
-for graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
+parfor graphIndex = 1:length(tf_list) %CHANGE TO PARFOR
         
         disp(strcat('Assessing graph number ', string(graphIndex), '/', string(length(tf_list))))
 
