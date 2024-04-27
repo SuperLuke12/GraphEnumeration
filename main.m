@@ -64,7 +64,7 @@ ks = 120000;
 performanceTable = step_five(Gout, tf_list, elementList, ks);
 disp(strcat('Step 5 done in ~', string(toc), 's'))
 
-bestResults = performanceTable(performanceTable.Performance <= 1.005 * performanceTable{1,"Performance"}, :);
+bestResults = performanceTable(performanceTable.Performance <= 1.001 * performanceTable{1,"Performance"}, :);
 disp(bestResults)
 for row = 1:size(bestResults,1)
     
