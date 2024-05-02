@@ -1,34 +1,26 @@
 function [Gout, runtime, performanceTable] = main(elementList)
-runtime = zeros(1,4);
+performanceTable = {};
+runtime = zeros(1,2);
 
 % Order of elements is K C B
-N = sum(elementList);
-t1 = 0.0;
-t2 = 0.0;
-
-A = {};
-B = {};
-parfor i=1:N
-    tic
-    temp = step_one(i);
-    A = [A; temp];
-    t1 = t1 + toc;
-
-    tic
-    B = [B, step_two(temp)];
-    t2 = t2 + toc;
-end
-runtime(1,1) = t1;
-runtime(1,2) = t2;
-disp(strcat('Step 1 done in ~', string(t1), 's'))
-
-disp(strcat('Step 2 done in ~', string(t2), 's'))
 
 tic
-C = step_three(B, N);
-t3 = toc;
-runtime(1,3) = t3;
-disp(strcat('Step 3 done in ~', string(t3), 's'))
+
+N = sum(elementList);
+C = {};
+
+parfor Ne = 1:N
+    
+    A = step_one(Ne);
+    B = step_two(A);
+    C = [C, step_three(B, N)];
+
+end
+
+runtime(1,1) = toc;
+
+disp(strcat('Step 1-3 done in ~', string(runtime(1,1)), 's'))
+
 
 % for i=1:length(C)
 %     graphGroup = C{i};
@@ -53,10 +45,10 @@ parfor group=1:length(C)
     tf_list = [tf_list, tfs];
 end
 t4 = toc;
-runtime(1,4) = t4;
+runtime(1,2) = t4;
+
 
 disp(strcat('Step 4 done in ~', string(t4), 's'))
-
 disp(append('Generated ', string(length(Gout)), ' networks'))
 
 tic
@@ -67,7 +59,7 @@ disp(strcat('Step 5 done in ~', string(toc), 's'))
 bestResults = performanceTable(performanceTable.Performance <= 1.001 * performanceTable{1,"Performance"}, :);
 disp(bestResults)
 for row = 1:size(bestResults,1)
-    
+
     filename = strcat('J3_ks=',string(ks), '_elemNums=',string(sum(elementList)),'_f(x)=',string(bestResults{row,"Performance"})  , '_elements=', string(elementList(1)), string(elementList(2)), string(elementList(3)), '_',string(row),'I',string(height(bestResults)));
 
     writetable(bestResults(row,:),strcat(filename, '.txt'));
